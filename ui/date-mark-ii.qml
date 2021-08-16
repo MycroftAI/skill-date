@@ -17,7 +17,7 @@ import QtQuick.Controls 2.0
 import Mycroft 1.0 as Mycroft
 
 Mycroft.CardDelegate {
-    id: timeScreen
+    id: dateScreen
 
     Item {
         id: backgroundImage
