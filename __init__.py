@@ -33,7 +33,6 @@ class DateSkill(MycroftSkill):
     def __init__(self):
         super().__init__("DateSkill")
         self.displayed_time = None
-        self.regex_file_path = Path(self.find_resource("location.rx", "regex"))
 
     # TODO: Move to reusable location
     @property
