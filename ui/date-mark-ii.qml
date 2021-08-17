@@ -12,6 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/*  Date skill screen for the Mark II GUI.
+
+This screen defined in this file is specific to the Mark II. It leverages defined best
+practices for Mark II screen design.  Figma specification for this screen can be found on
+the "Skill - Date and Time" page of this figma project:
+    https://www.figma.com/file/eQGAYPY0cTKvmU8OJ113Sv/Mark-II-GUI-Production?node-id=36%3A0
+*/
 import QtQuick 2.4
 import QtQuick.Controls 2.0
 import Mycroft 1.0 as Mycroft
@@ -20,7 +27,7 @@ Mycroft.CardDelegate {
     id: dateScreen
 
     Item {
-        id: backgroundImage
+        id: calendar
         anchors.left: parent.left
         anchors.leftMargin: gridUnit * 9
         anchors.top: parent.top
