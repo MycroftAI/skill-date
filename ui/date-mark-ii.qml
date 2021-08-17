@@ -24,7 +24,7 @@ Mycroft.CardDelegate {
         anchors.left: parent.left
         anchors.leftMargin: gridUnit * 9
         anchors.top: parent.top
-        anchors.topMargin: gridUnit * 6
+        anchors.topMargin: gridUnit * 3
 
         Image {
             id: dateBackground
