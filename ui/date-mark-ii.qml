@@ -45,7 +45,7 @@ Mycroft.CardDelegate {
 
         DateLabel {
             id: monthLabel
-            anchors.top: backgroundImage.top
+            anchors.top: calendar.top
             anchors.topMargin: gridUnit
             fontSize: 60
             fontStyle: "Bold"
@@ -56,7 +56,7 @@ Mycroft.CardDelegate {
 
         DateLabel {
             id: dayLabel
-            anchors.top: backgroundImage.top
+            anchors.top: calendar.top
             anchors.topMargin: gridUnit * 7
             textColor: "#2C3E50"
             fontSize: 176
@@ -68,7 +68,7 @@ Mycroft.CardDelegate {
 
         DateLabel {
             id: weekdayLabel
-            anchors.top: backgroundImage.top
+            anchors.top: calendar.top
             anchors.topMargin: gridUnit * 16
             textColor: "#2C3E50"
             fontSize: 47
