@@ -187,7 +187,6 @@ class DateSkill(MycroftSkill):
         Args:
             response: Data used by the display logic to communicate the Response
         """
-        self.gui.clear()
         self.gui["weekdayString"] = response.date_time.strftime("%A").upper()
         self.gui["monthString"] = response.date_time.strftime("%B")
         self.gui["dayString"] = response.date_time.strftime("%-d")
@@ -202,8 +201,6 @@ class DateSkill(MycroftSkill):
             self.enclosure.mouth_reset()
             self.enclosure.activate_mouth_events()
             self.enclosure.display_manager.remove_active()
-        elif self.gui.connected:
-            self.gui.release()
 
 
 def create_skill():
