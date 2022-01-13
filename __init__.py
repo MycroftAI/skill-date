@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Mycroft skill to respond to user requests for dates."""
-import time
 from datetime import date, datetime
-from pathlib import Path
 
 from mycroft.messagebus.message import Message
 from mycroft.skills import MycroftSkill, intent_handler
@@ -141,7 +139,6 @@ class DateSkill(MycroftSkill):
         """
         self._display(response)
         self.speak_dialog(response.dialog_name, response.dialog_data, wait=True)
-        time.sleep(10)
         self._clear_display()
 
     def _display(self, response: Response):
@@ -191,16 +188,18 @@ class DateSkill(MycroftSkill):
         self.gui["monthString"] = response.date_time.strftime("%B")
         self.gui["dayString"] = response.date_time.strftime("%-d")
         if self.platform == MARK_II:
-            self.gui.show_page("date-mark-ii.qml")
+            self.gui.show_page("date-mark-ii.qml", override_idle=True)
         else:
-            self.gui.show_page("date-scalable.qml")
+            self.gui.show_page("date-scalable.qml", override_idle=True)
 
     def _clear_display(self):
         """Clear the display medium of the date."""
-        if self.platform == "mycroft_mark_1":
+        if self.platform == MARK_I:
             self.enclosure.mouth_reset()
             self.enclosure.activate_mouth_events()
             self.enclosure.display_manager.remove_active()
+        elif self.gui.connected:
+            self.gui.clear()
 
 
 def create_skill():
