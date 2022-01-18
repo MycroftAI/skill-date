@@ -56,7 +56,8 @@ class DateSkill(MycroftSkill):
 
         Example: "What is the date today?"
         """
-        self._handle_current_date()
+        with self.activity():
+            self._handle_current_date()
 
     @intent_handler(
         AdaptIntent().optionally("query").require("relative-day").optionally("date")
@@ -69,7 +70,8 @@ class DateSkill(MycroftSkill):
         Args:
             request: The request from the user that triggered this intent.
         """
-        self._handle_relative_date(request)
+        with self.activity():
+            self._handle_relative_date(request)
 
     @intent_handler(AdaptIntent().require("query").require("month"))
     def handle_day_for_date(self, request):
@@ -80,7 +82,8 @@ class DateSkill(MycroftSkill):
         Args:
             request: The request from the user that triggered this intent.
         """
-        self._handle_relative_date(request)
+        with self.activity():
+            self._handle_relative_date(request)
 
     @intent_handler(AdaptIntent().require("query").require("leap-year"))
     def handle_next_leap_year_request(self, _):
@@ -88,19 +91,21 @@ class DateSkill(MycroftSkill):
 
         Example: "When is the next leap year?"
         """
-        today = now_local().date()
-        leap_date = date(today.year, 2, 28)
-        year = today.year if today <= leap_date else today.year + 1
-        while not is_leap_year(year):
-            year += 1
-        self.speak_dialog("next-leap-year", data=dict(year=year))
+        with self.activity():
+            today = now_local().date()
+            leap_date = date(today.year, 2, 28)
+            year = today.year if today <= leap_date else today.year + 1
+            while not is_leap_year(year):
+                year += 1
+            self.speak_dialog("next-leap-year", data=dict(year=year), wait=True)
 
     @intent_handler("date-future-weekend.intent")
     def handle_future_weekend_request(self, _):
-        saturday_date = get_speakable_weekend_date("this saturday")
-        sunday_date = get_speakable_weekend_date("this sunday")
-        dialog_data = dict(saturday_date=saturday_date, sunday_date=sunday_date)
-        self.speak_dialog("date-future-weekend", data=dialog_data)
+        with self.activity():
+            saturday_date = get_speakable_weekend_date("this saturday")
+            sunday_date = get_speakable_weekend_date("this sunday")
+            dialog_data = dict(saturday_date=saturday_date, sunday_date=sunday_date)
+            self.speak_dialog("date-future-weekend", data=dialog_data, wait=True)
 
     @intent_handler("date-last-weekend.intent")
     def handle_last_weekend_request(self, _):
@@ -108,10 +113,11 @@ class DateSkill(MycroftSkill):
 
         Example: "What were the dates last weekend?"
         """
-        saturday_date = get_speakable_weekend_date("last saturday")
-        sunday_date = get_speakable_weekend_date("last sunday")
-        dialog_data = dict(saturday_date=saturday_date, sunday_date=sunday_date)
-        self.speak_dialog("date-last-weekend", data=dialog_data)
+        with self.activity():
+            saturday_date = get_speakable_weekend_date("last saturday")
+            sunday_date = get_speakable_weekend_date("last sunday")
+            dialog_data = dict(saturday_date=saturday_date, sunday_date=sunday_date)
+            self.speak_dialog("date-last-weekend", data=dialog_data, wait=True)
 
     def _handle_current_date(self):
         """Build, speak and display the response to a current date request."""
