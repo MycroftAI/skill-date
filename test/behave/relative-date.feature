@@ -5,7 +5,7 @@ Feature: Relative Date
   Scenario Outline: User requests a date a number of days in the future
     Given an english speaking user
      When the user says "<future date request>"
-     Then "mycroft-date-time" should reply with dialog from "date-relative-future.dialog"
+     Then "date" should reply with dialog from "date-relative-future.dialog"
 
   Examples:
     | future date request |
@@ -18,18 +18,17 @@ Feature: Relative Date
   Scenario Outline: what was the date a number of days in the past
     Given an english speaking user
      When the user says "<past date request>"
-     Then "mycroft-date-time" should reply with dialog from "date-relative-past.dialog"
+     Then "date" should reply with dialog from "date-relative-past.dialog"
 
   Examples:
     | past date request |
     | what was the date 2 days ago |
     | what was the date 5 days ago |
 
-  @xfail
   Scenario Outline: failing what was the date a number of days in the past
     Given an english speaking user
      When the user says "<failing past date request>"
-     Then "mycroft-date-time" should reply with dialog from "date-relative-past.dialog"
+     Then "date" should reply with dialog from "date-relative-past.dialog"
 
   Examples:
     | failing past date request |
@@ -39,7 +38,7 @@ Feature: Relative Date
   Scenario Outline: when is a date in the future
     Given an english speaking user
      When the user says "<future date request>"
-     Then "mycroft-date-time" should reply with dialog from "date-relative-future.dialog"
+     Then "date" should reply with dialog from "date-relative-future.dialog"
 
   Examples:
     | future date request |
@@ -55,7 +54,7 @@ Feature: Relative Date
   Scenario Outline: when is a date in the past
     Given an english speaking user
      When the user says "<past date request>"
-     Then "mycroft-date-time" should reply with dialog from "date-relative-past.dialog"
+     Then "date" should reply with dialog from "date-relative-past.dialog"
 
   Examples:
     | past date request |
