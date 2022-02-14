@@ -205,7 +205,7 @@ class DateSkill(MycroftSkill):
             self.enclosure.activate_mouth_events()
             self.enclosure.display_manager.remove_active()
         elif self.gui.connected:
-            self.gui.clear()
+            self.gui.release()
 
 
 def create_skill():
