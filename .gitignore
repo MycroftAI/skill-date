@@ -131,3 +131,4 @@ dmypy.json
 
 # Pycharm IDE files
 .idea/
+.wh.*
