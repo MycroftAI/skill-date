@@ -31,6 +31,7 @@ class DateSkill(MycroftSkill):
     def __init__(self):
         super().__init__("DateSkill")
         self.displayed_time = None
+        self._current_date_cache_key = None
 
     # TODO: Move to reusable location
     @property
@@ -49,6 +50,7 @@ class DateSkill(MycroftSkill):
     def initialize(self):
         """Tasks to perform after constructor but before skill is ready for use."""
         date_time_format.cache(self.lang)
+        self._cache_current_date_tts()
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
     def handle_current_date_request(self, _):
@@ -123,7 +125,8 @@ class DateSkill(MycroftSkill):
         """Build, speak and display the response to a current date request."""
         response = Response()
         response.build_current_date_response()
-        self._respond(response)
+        self._respond(response, cache_key=self._current_date_cache_key)
+        self._cache_current_date_tts()
 
     def _handle_relative_date(self, request: Message):
         """Build, speak and display the response to a current date request.
@@ -137,14 +140,15 @@ class DateSkill(MycroftSkill):
         if response.date_time is not None:
             self._respond(response)
 
-    def _respond(self, response: Response):
+    def _respond(self, response: Response, cache_key=None):
         """Speak and display the response to a date request.
 
         Args:
             response: Data used by the speak/display logic to communicate the Response
         """
         self._display(response)
-        self.speak_dialog(response.dialog_name, response.dialog_data, wait=True)
+        self.speak_dialog(response.dialog_name, response.dialog_data, wait=True,
+                          cache_key=cache_key)
         self._clear_display()
 
     def _display(self, response: Response):
@@ -206,6 +210,13 @@ class DateSkill(MycroftSkill):
             self.enclosure.display_manager.remove_active()
         elif self.gui.connected:
             self.gui.release()
+
+    def _cache_current_date_tts(self):
+        response = Response()
+        response.build_current_date_response()
+        self._current_date_cache_key = self.cache_dialog(
+            response.dialog_name, response.dialog_data
+        )
 
 
 def create_skill():
