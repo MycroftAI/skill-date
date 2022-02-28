@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Mycroft skill to respond to user requests for dates."""
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from mycroft.messagebus.message import Message
 from mycroft.skills import MycroftSkill, intent_handler
@@ -31,7 +31,6 @@ class DateSkill(MycroftSkill):
     def __init__(self):
         super().__init__("DateSkill")
         self.displayed_time = None
-        self._current_date_cache_key = None
 
     # TODO: Move to reusable location
     @property
@@ -50,7 +49,9 @@ class DateSkill(MycroftSkill):
     def initialize(self):
         """Tasks to perform after constructor but before skill is ready for use."""
         date_time_format.cache(self.lang)
-        self._cache_current_date_tts()
+
+        self._current_date_cache_key = f"{self.skill_id}.current-date"
+        self.schedule_event(self._cache_current_date_tts, when=1, name="CacheTTS")
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
     def handle_current_date_request(self, _):
@@ -147,8 +148,9 @@ class DateSkill(MycroftSkill):
             response: Data used by the speak/display logic to communicate the Response
         """
         self._display(response)
-        self.speak_dialog(response.dialog_name, response.dialog_data, wait=True,
-                          cache_key=cache_key)
+        self.speak_dialog(
+            response.dialog_name, response.dialog_data, wait=True, cache_key=cache_key
+        )
         self._clear_display()
 
     def _display(self, response: Response):
@@ -212,11 +214,29 @@ class DateSkill(MycroftSkill):
             self.gui.release()
 
     def _cache_current_date_tts(self):
-        response = Response()
-        response.build_current_date_response()
-        self._current_date_cache_key = self.cache_dialog(
-            response.dialog_name, response.dialog_data
-        )
+        try:
+            # Re-cache tomorrow
+            self.cancel_scheduled_event("CacheTTS")
+
+            now = datetime.now()
+            tomorrow = datetime(
+                year=now.year, month=now.month, day=now.day
+            ) + timedelta(days=1)
+
+            self.schedule_event(
+                self._cache_current_date_tts, when=tomorrow, name="CacheTTS"
+            )
+
+            response = Response()
+            response.build_current_date_response()
+
+            self.cache_dialog(
+                response.dialog_name,
+                response.dialog_data,
+                cache_key=self._current_date_cache_key,
+            )
+        except Exception:
+            self.log.exception("Error while caching TTS")
 
 
 def create_skill():
