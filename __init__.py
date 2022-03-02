@@ -51,7 +51,8 @@ class DateSkill(MycroftSkill):
         date_time_format.cache(self.lang)
 
         self._current_date_cache_key = f"{self.skill_id}.current-date"
-        self.schedule_event(self._cache_current_date_tts, when=1, name="CacheTTS")
+
+        self.add_event("mycroft.started", self._cache_current_date_tts)
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
     def handle_current_date_request(self, _):
@@ -213,7 +214,7 @@ class DateSkill(MycroftSkill):
         elif self.gui.connected:
             self.gui.release()
 
-    def _cache_current_date_tts(self):
+    def _cache_current_date_tts(self, _message=None):
         try:
             # Re-cache tomorrow
             self.cancel_scheduled_event("CacheTTS")
