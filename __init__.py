@@ -52,7 +52,7 @@ class DateSkill(MycroftSkill):
 
         self._current_date_cache_key = f"{self.skill_id}.current-date"
 
-        self.add_event("mycroft.started", self._cache_current_date_tts)
+        self.add_event("mycroft.ready", self._cache_current_date_tts)
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
     def handle_current_date_request(self, _):
