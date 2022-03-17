@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Mycroft skill to respond to user requests for dates."""
+import typing
 from datetime import date, datetime, timedelta
 
 from mycroft.messagebus.message import Message
@@ -31,6 +32,7 @@ class DateSkill(MycroftSkill):
     def __init__(self):
         super().__init__("DateSkill")
         self.displayed_time = None
+        self._cached_tts_date: typing.Optional[datetime] = None
 
     # TODO: Move to reusable location
     @property
@@ -53,6 +55,14 @@ class DateSkill(MycroftSkill):
         self._current_date_cache_key = f"{self.skill_id}.current-date"
 
         self.add_event("mycroft.ready", self._cache_current_date_tts)
+
+        # Check if date has changed once a minute
+        self.schedule_repeating_event(
+            handler=self._cache_current_date_tts,
+            when=None,
+            frequency=60,
+            name="CacheTTS",
+        )
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
     def handle_current_date_request(self, _):
@@ -216,26 +226,20 @@ class DateSkill(MycroftSkill):
 
     def _cache_current_date_tts(self, _message=None):
         try:
-            # Re-cache tomorrow
-            self.cancel_scheduled_event("CacheTTS")
-
             now = datetime.now()
-            tomorrow = datetime(
-                year=now.year, month=now.month, day=now.day
-            ) + timedelta(days=1)
+            if (self._cached_tts_date is None) or (
+                self._cached_tts_date.date() != now.date()
+            ):
+                self._cached_tts_date = now
 
-            self.schedule_event(
-                self._cache_current_date_tts, when=tomorrow, name="CacheTTS"
-            )
+                response = Response()
+                response.build_current_date_response()
 
-            response = Response()
-            response.build_current_date_response()
-
-            self.cache_dialog(
-                response.dialog_name,
-                response.dialog_data,
-                cache_key=self._current_date_cache_key,
-            )
+                self.cache_dialog(
+                    response.dialog_name,
+                    response.dialog_data,
+                    cache_key=self._current_date_cache_key,
+                )
         except Exception:
             self.log.exception("Error while caching TTS")
 
