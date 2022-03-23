@@ -74,7 +74,7 @@ class DateSkill(MycroftSkill):
             self._handle_current_date()
 
     @intent_handler(
-        AdaptIntent().require("query").require("relative-day").optionally("date")
+        AdaptIntent().require("query").require("relative-day").require("date")
     )
     def handle_relative_date_request(self, request: Message):
         """Respond to a request from the user for a date in the past or future.
