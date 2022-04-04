@@ -47,7 +47,6 @@ Feature: Relative Date
     | what's tomorrow's date |
     | what is the date tomorrow |
     | what date is next monday |
-    | what is the date this Monday |
     | what day is september 1st 2028 |
     | what day is June 30th |
 
