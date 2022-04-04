@@ -14,6 +14,7 @@
 """Mycroft skill to respond to user requests for dates."""
 import typing
 from datetime import date, datetime, timedelta
+from urllib import request
 
 from mycroft.messagebus.message import Message
 from mycroft.skills import MycroftSkill, intent_handler
@@ -21,6 +22,7 @@ from mycroft.skills.intent_service import AdaptIntent
 from mycroft.util.format import date_time_format
 from mycroft.util.time import now_local
 from .skill import get_speakable_weekend_date, is_leap_year, Response
+from .skill.util import extract_datetime_from_utterance
 
 MARK_I = "mycroft_mark_1"
 MARK_II = "mycroft_mark_2"
@@ -65,13 +67,24 @@ class DateSkill(MycroftSkill):
         )
 
     @intent_handler(AdaptIntent().require("query").require("date").optionally("today"))
-    def handle_current_date_request(self, _):
+    def handle_current_date_request(self, message):
         """Respond to a request from the user for the current date.
 
         Example: "What is the date today?"
         """
         with self.activity():
-            self._handle_current_date()
+            # First ensure that no other date has been requested
+            # eg "What is the date tomorrow"
+            # In the perfect world this would never happen...
+            # However the keywords for this intent are very broad.
+            utterance = message.data["utterance"]
+            requested_date = extract_datetime_from_utterance(utterance)
+            today_vocab = self.resources.load_vocabulary_file("today")[0][0]
+            today_date = extract_datetime_from_utterance(today_vocab)
+            if requested_date is None or requested_date == today_date:
+                self._handle_current_date()
+            else:
+                self._handle_relative_date(message)
 
     @intent_handler(
         AdaptIntent().require("query").require("relative-day").require("date")
